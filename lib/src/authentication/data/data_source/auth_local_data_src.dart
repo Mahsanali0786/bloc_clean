@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class AuthLocalDataSrc {
   Future<void> cacheUserData({required String name, required String email});
-  Future<UserModel> getCachedUser(String key);
+  Future<UserModel> getCachedUser();
   Future<void> logoutUser();
 }
 
@@ -20,11 +20,14 @@ class AuthLocalDataSrcImpl extends AuthLocalDataSrc {
   Future<void> cacheUserData(
       {required String name, required String email}) async {
     try {
-      String user = jsonEncode({'data':{'name': name, 'email': email}});
+      String user = jsonEncode({
+        'data': {'Name': name, 'Email': email}
+      });
       final response = await sharedPreferences.setString(userData, user);
 
       if (response != true) {
-        throw const LocalException(message: 'Data is not saved', statusCode: 400);
+        throw const LocalException(
+            message: 'Data is not saved', statusCode: 400);
       }
     } on LocalException {
       rethrow;
@@ -34,10 +37,9 @@ class AuthLocalDataSrcImpl extends AuthLocalDataSrc {
   }
 
   @override
-  Future<UserModel> getCachedUser(String key) async {
+  Future<UserModel> getCachedUser() async {
     try {
-      final response = sharedPreferences.getString(key);
-
+      final response = sharedPreferences.getString(userData);
       if (response == null || response == '') {
         throw const LocalException(
             message: 'Error occurred while getting User', statusCode: 400);

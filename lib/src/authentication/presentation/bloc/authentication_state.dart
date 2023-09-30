@@ -16,7 +16,14 @@ class LoadingState extends AuthenticationState {
   final String message;
 }
 
-class LoginState extends AuthenticationState {}
+class LoginState extends AuthenticationState {
+  const LoginState(this.user);
+
+  final User user;
+
+  @override
+  List<Object> get props => [user];
+}
 
 class UserLoadedState extends AuthenticationState {
   const UserLoadedState(this.user);
@@ -27,7 +34,7 @@ class UserLoadedState extends AuthenticationState {
   List<Object> get props => [user];
 }
 
-class GetCachedUserErrorState extends AuthenticationState{}
+class GetCachedUserErrorState extends AuthenticationState {}
 
 class AuthenticationErrorState extends AuthenticationState {
   const AuthenticationErrorState({required this.message});

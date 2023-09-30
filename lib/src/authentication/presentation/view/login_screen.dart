@@ -36,7 +36,9 @@ class _LoginUserState extends State<LoginUser> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthenticationBloc, AuthenticationState>(
       listener: (context, state) {
-        if (state is UserLoadedState) {
+        if (state is LoginState) {
+          context.read<AuthenticationBloc>().add(
+              CacheUserEvent(name: state.user.name, email: state.user.email));
           context.go('/');
         } else if (state is AuthenticationErrorState) {
           ScaffoldMessenger.of(context)
@@ -89,7 +91,6 @@ class _LoginUserState extends State<LoginUser> {
                         onPressed: () {
                           context.read<AuthenticationBloc>().add(LoginUserEvent(
                               email: email.text, password: password.text));
-                          print('logged in');
                         },
                       ),
                     ),

@@ -42,8 +42,6 @@ void main() {
 
       verify(() => remoteDataSrc.loginUser(
           email: tUserModel.email, password: tUserModel.password)).called(1);
-      verify(() => localDataSrc.cacheUserData(
-          name: tUserModel.name, email: tUserModel.email)).called(1);
       expect(result, equals(const Right(tUserModel)));
 
       verifyNoMoreInteractions(remoteDataSrc);

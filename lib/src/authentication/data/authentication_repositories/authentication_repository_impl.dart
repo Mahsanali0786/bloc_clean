@@ -13,8 +13,6 @@ class AuthRepoImpl implements AuthenticationRepository {
   final AuthRemoteDataSrc _dataSrc;
   final AuthLocalDataSrc _localDataSrc;
 
-
-
   @override
   ResultFuture<User> loginUser(
       {required String email, required String password}) async {
@@ -25,7 +23,6 @@ class AuthRepoImpl implements AuthenticationRepository {
       return Left(APIFailure.fromException(e));
     }
   }
-
 
   @override
   ResultVoid logoutUser() async {
@@ -40,7 +37,7 @@ class AuthRepoImpl implements AuthenticationRepository {
   @override
   ResultFuture<User> getCachedUser() async {
     try {
-      final result = await _localDataSrc.getCachedUser('userData');
+      final result = await _localDataSrc.getCachedUser();
       return Right(result);
     } on LocalException catch (e) {
       return Left(LocalFailure.fromException(e));

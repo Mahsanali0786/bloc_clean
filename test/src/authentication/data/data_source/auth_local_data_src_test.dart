@@ -17,13 +17,13 @@ void main() {
     localDataSrcImpl = AuthLocalDataSrcImpl(sharedPreferences);
   });
 
-  const tUserModel=UserModel.empty();
+  const tUserModel = UserModel.empty();
 
   String tUserData = '"userData"';
   const name = 'name';
   const email = 'email';
   String tUser = jsonEncode({
-    'data': {'name': name, 'email': email}
+    'data': {'Name': name, 'Email': email}
   });
   group('CacheUserData', () {
     test('should complete successfully when data is cached ', () {
@@ -41,42 +41,39 @@ void main() {
           .thenAnswer((_) async => false);
       final method = localDataSrcImpl.cacheUserData;
 
-      expect(()async=>method(name: name, email: email), throwsA(const LocalException(message: 'Data is not saved', statusCode: 400)));
+      expect(
+          () async => method(name: name, email: email),
+          throwsA(const LocalException(
+              message: 'Data is not saved', statusCode: 400)));
       verify(() => sharedPreferences.setString(tUserData, tUser));
       verifyNoMoreInteractions(sharedPreferences);
     });
-
-
   });
 
-  group('getCachedUser', (){
-    test('should return [UserModel] with correct data when successful', () async{
-      when(()=>sharedPreferences.getString(any())).thenReturn(tUserModel.toJson());
+  group('getCachedUser', () {
+    test('should return [UserModel] with correct data when successful',
+        () async {
+      when(() => sharedPreferences.getString(any()))
+          .thenReturn(tUserModel.toJson());
 
-      final result= await localDataSrcImpl.getCachedUser(tUserData);
+      final result = await localDataSrcImpl.getCachedUser();
 
       expect(result, equals(tUserModel));
-      verify(()=>sharedPreferences.getString(tUserData));
+      verify(() => sharedPreferences.getString(tUserData));
       verifyNoMoreInteractions(sharedPreferences);
     });
 
-    const tLocalException=LocalException(
+    const tLocalException = LocalException(
         message: 'Error occurred while getting User', statusCode: 400);
 
-    test('should return LocalException when failure', () async{
-      when(()=>sharedPreferences.getString(any())).thenAnswer((_) => null);
+    test('should return LocalException when failure', () async {
+      when(() => sharedPreferences.getString(any())).thenAnswer((_) => null);
 
-      final result=  localDataSrcImpl.getCachedUser;
+      final result = localDataSrcImpl.getCachedUser;
 
-      expect(()async=>result((tUserData)), throwsA(tLocalException));
-      verify(()=>sharedPreferences.getString(tUserData));
+      expect(() async => result(), throwsA(tLocalException));
+      verify(() => sharedPreferences.getString(tUserData));
       verifyNoMoreInteractions(sharedPreferences);
     });
-
   });
-
-
-
-
-
 }

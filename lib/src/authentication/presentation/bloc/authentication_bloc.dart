@@ -28,17 +28,6 @@ class AuthenticationBloc
     on<LoginUserEvent>(_loginUserHandler);
     on<LogoutUserEvent>(_logoutUserHandler);
   }
-  // Future<void> _createUserHandler(
-  //     CreateUserEvent event, Emitter<AuthenticationState> emit) async {
-  //   emit(CreatingUserState());
-  //
-  //   final result = await _createUser(Params(
-  //       name: event.name, createdAt: event.createdAt, avatar: event.avatar));
-  //
-  //   result.fold(
-  //       (failure) => AuthenticationErrorState(message: failure.getErrorMessage),
-  //       (_) => emit(UserCreatedState()));
-  // }
 
   Future<void> _getCachedUserHandler(
       GetCachedUserEvent event, Emitter<AuthenticationState> emit) async {
@@ -48,10 +37,8 @@ class AuthenticationBloc
 
     //Either(failure,User)
 
-    result.fold(
-        (failure) =>
-            emit(AuthenticationErrorState(message: failure.getErrorMessage)),
-        (users) => emit(UserLoadedState(users)));
+    result.fold((failure) => emit(GetCachedUserErrorState()),
+        (user) => emit(UserLoadedState(user)));
   }
 
   FutureOr<void> _cacheUserHandler(
@@ -80,7 +67,7 @@ class AuthenticationBloc
       if (user == const UserModel.empty()) {
         return emit(const AuthenticationErrorState(message: 'invalid User'));
       } else {
-        return emit(UserLoadedState(user));
+        return emit(LoginState(user));
       }
     });
   }

@@ -59,7 +59,7 @@ void main() {
     const tUserLoginParams = LoginUserParams(email: email, password: password);
     registerFallbackValue(tUserLoginParams);
 
-    blocTest('should emit [LoadingUserState,UserLoadedState] when successful',
+    blocTest('should emit [LoadingUserState,UserLoginState] when successful',
         build: () {
           when(() => loginUser(any()))
               .thenAnswer((_) async => const Right(user));
@@ -68,7 +68,7 @@ void main() {
         },
         act: (bloc) =>
             bloc.add(const LoginUserEvent(email: email, password: password)),
-        expect: () => [const LoadingState(''), const UserLoadedState(user)],
+        expect: () => [const LoadingState(''), const LoginState(user)],
         verify: (_) {
           verify(() => loginUser(tUserLoginParams)).called(1);
           verifyNoMoreInteractions(loginUser);
@@ -146,7 +146,7 @@ void main() {
             verifyNoMoreInteractions(logoutUser);
           });
       blocTest(
-          'should emit [LodingState,AuthenticationErrorState] when there is any failure',
+          'should emit [LodingState,GetttingUserCacheErrorState] when there is any failure',
           build: () {
             when(() => cacheUser(any()))
                 .thenAnswer((_) async => const Left(tLocalFailure));
@@ -154,10 +154,8 @@ void main() {
           },
           act: (bloc) =>
               bloc.add(const CacheUserEvent(name: name, email: email)),
-          expect: () => [
-                const LoadingState('Logging In...'),
-                AuthenticationErrorState(message: tLocalFailure.getErrorMessage)
-              ],
+          expect: () =>
+              [const LoadingState('Logging In...'), GetCachedUserErrorState()],
           verify: (_) {
             verify(() => cacheUser(tCacheUserParams)).called(1);
             verifyNoMoreInteractions(logoutUser);
@@ -170,17 +168,13 @@ void main() {
 
       blocTest('should emit [LoadingUserState,userLoadedState] when successful',
           build: () {
-            when(() => getUser())
-                .thenAnswer((_) async => const Right(user));
+            when(() => getUser()).thenAnswer((_) async => const Right(user));
 
             return bloc;
           },
-          act: (bloc) =>
-              bloc.add(GetCachedUserEvent()),
-          expect: () => [
-            const LoadingState('Loading data'),
-            const UserLoadedState(user)
-          ],
+          act: (bloc) => bloc.add(GetCachedUserEvent()),
+          expect: () =>
+              [const LoadingState('Loading data'), const UserLoadedState(user)],
           verify: (_) {
             verify(() => getUser()).called(1);
             verifyNoMoreInteractions(getUser);
@@ -192,12 +186,9 @@ void main() {
                 .thenAnswer((_) async => const Left(tLocalFailure));
             return bloc;
           },
-          act: (bloc) =>
-              bloc.add(GetCachedUserEvent()),
-          expect: () => [
-            const LoadingState('Logging In...'),
-            AuthenticationErrorState(message: tLocalFailure.getErrorMessage)
-          ],
+          act: (bloc) => bloc.add(GetCachedUserEvent()),
+          expect: () =>
+              [const LoadingState('Logging In...'), GetCachedUserErrorState()],
           verify: (_) {
             verify(() => getUser()).called(1);
             verifyNoMoreInteractions(getUser);
